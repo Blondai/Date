@@ -15,7 +15,13 @@ pub struct Day {
 }
 
 impl Day {
-    /// Creates a new [`Day`] instance based on a string.
+    /// Creates a new [`Day`] instance.
+    ///
+    /// # Arguments
+    ///
+    /// * `day`: The day.
+    /// * `month`: The month the day should be in.
+    /// * `year`: The year the day should be in.
     ///
     /// # Returns
     ///
@@ -46,6 +52,44 @@ impl Day {
             Ok(Self { day })
         } else {
             Err(ChronoError::DayError { day, days_in_month })
+        }
+    }
+
+    /// Creates a new [`Day`] instance.
+    ///
+    /// This will `panic`, when an invalid combination is provided.
+    ///
+    /// # Arguments
+    ///
+    /// * `day`: The day.
+    /// * `month`: The month the day should be in.
+    /// * `year`: The year the day should be in.
+    ///
+    /// # Panics
+    ///
+    /// Month does not have the amount of days provided.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use date::{Day, Month, Year};
+    /// // Valid
+    /// const DAY_1: Day = Day::new_const(31, 12, 2025);
+    /// assert_eq!(DAY_1.value(), 31);
+    /// // Leap year
+    /// const DAY_2: Day = Day::new_const(29, 2, 2024);
+    /// assert_eq!(DAY_2.value(), 29);
+    /// ```
+    #[inline]
+    pub const fn new_const(day: u8, month: u8, year: i32) -> Self {
+        let month: Month = Month::new_const(month);
+        let year: Year = Year::new_const(year);
+        let days_in_month: u8 = month.days_in_month(year);
+
+        if day >= 1_u8 && day <= days_in_month {
+            Self { day }
+        } else {
+            panic!("Invalid day")
         }
     }
 

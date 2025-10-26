@@ -86,6 +86,38 @@ impl Month {
         }
     }
 
+    /// Creates a new [`Month`] instance.
+    ///
+    /// # Panics
+    ///
+    /// Month is not between 1 (january) and 12 (december).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use date::Month;
+    /// const MONTH: Month = Month::new_const(11);
+    /// assert_eq!(MONTH, Month::November);
+    /// ```
+    #[inline]
+    pub const fn new_const(number: u8) -> Self {
+        match number {
+            1 => Month::January,
+            2 => Month::February,
+            3 => Month::March,
+            4 => Month::April,
+            5 => Month::May,
+            6 => Month::June,
+            7 => Month::July,
+            8 => Month::August,
+            9 => Month::September,
+            10 => Month::October,
+            11 => Month::November,
+            12 => Month::December,
+            _ => panic!("Invalid month"),
+        }
+    }
+
     /// Creates a new [`Month`] instance based on a string.
     ///
     /// This can be a string of a number or a string of the written month.

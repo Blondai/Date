@@ -40,7 +40,7 @@ impl Date {
 
     /// Creates a new [`Date`] instance based on numbers.
     ///
-    /// This calls the appropriate `new` methods of [`Year`], [`Month`] and [`Day`].
+    /// This calls [`Year::new`], [`Month::new`] and [`Day::new`].
     ///
     /// # Returns
     ///
@@ -73,6 +73,32 @@ impl Date {
         let day: Day = Day::new(day, month, year)?;
 
         Ok(Self { year, month, day })
+    }
+
+    /// Creates a new [`Date`] instance based on numbers.
+    ///
+    /// This calls [`Year::new_const`], [`Month::new_const`] and [`Day::new_const`].
+    ///
+    /// # Panics
+    ///
+    /// When any of the `new_const` methods panic
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use date::Date;
+    /// const DATE: Date = Date::new_const(2024, 1, 1);
+    /// assert_eq!(DATE.day().value(), 1);
+    /// assert_eq!(DATE.month().value(), 1);
+    /// assert_eq!(DATE.year().value(), 2024);
+    /// ```
+    #[inline]
+    pub const fn new_const(year: i32, month: u8, day: u8) -> Self {
+        let day: Day = Day::new_const(day, month, year);
+        let month: Month = Month::new_const(month);
+        let year: Year = Year::new_const(year);
+
+        Self { year, month, day }
     }
 
     /// Creates a new [`Date`] instance the string 'ddmmyyyy'.
@@ -669,5 +695,11 @@ impl Date {
 impl Display for Date {
     fn fmt(&self, format: &mut Formatter) -> fmt::Result {
         write!(format, "{}", self.format_dmy())
+    }
+}
+
+impl From<Year> for String {
+    fn from(year: Year) -> String {
+        format!("{}", year)
     }
 }

@@ -160,13 +160,20 @@ impl TryFrom<u8> for Age {
     }
 }
 
+impl TryFrom<usize> for Age {
+    type Error = ChronoError;
+
+    fn try_from(number: usize) -> Result<Self, Self::Error> {
+        let as_u8: u8 = number.try_into().map_err(|_| ChronoError::OverflowError)?;
+        Self::new(as_u8)
+    }
+}
+
 impl TryFrom<i32> for Age {
     type Error = ChronoError;
 
     fn try_from(number: i32) -> Result<Self, Self::Error> {
-        let as_u8: u8 = number
-            .try_into()
-            .map_err(|_| ChronoError::OverflowError)?;
+        let as_u8: u8 = number.try_into().map_err(|_| ChronoError::OverflowError)?;
         Self::new(as_u8)
     }
 }
@@ -174,6 +181,12 @@ impl TryFrom<i32> for Age {
 impl From<Age> for u8 {
     fn from(age: Age) -> Self {
         age.value()
+    }
+}
+
+impl From<Age> for usize {
+    fn from(age: Age) -> Self {
+        age.value() as usize
     }
 }
 

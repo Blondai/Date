@@ -43,6 +43,28 @@ impl Year {
         }
     }
 
+    /// Creates a new [`Year`] instance.
+    ///
+    /// # Panics
+    ///
+    /// The `year` is not between [`Year::MIN`] and [`Year::MAX`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use date::Year;
+    /// const YEAR: Year = Year::new_const(2025);
+    /// assert_eq!(YEAR.value(), 2025);
+    /// ```
+    #[inline]
+    pub const fn new_const(year: i32) -> Self {
+        if year >= Self::MIN && year <= Self::MAX {
+            Self { year }
+        } else {
+            panic!("Invalid year");
+        }
+    }
+
     /// Returns a new [`Year`] instance without any checks.
     #[allow(dead_code)]
     #[inline]
