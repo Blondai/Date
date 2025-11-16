@@ -1,7 +1,9 @@
 //! This module contains the implementation of the [`ChronoError`] enum.
 
-use std::error::Error;
-use std::fmt::{Display, Formatter};
+use std::{
+    error::Error,
+    fmt::{self, Display, Formatter},
+};
 
 #[allow(unused_imports)]
 use crate::Date;
@@ -30,7 +32,7 @@ pub enum ChronoError {
 }
 
 impl Display for ChronoError {
-    fn fmt(&self, format: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, format: &mut Formatter<'_>) -> fmt::Result {
         match self {
             ChronoError::YearError(year) => write!(
                 format,

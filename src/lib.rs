@@ -1,15 +1,10 @@
-mod age;
 mod date;
-mod day;
-mod error;
-mod month;
-mod year;
+mod rata_temporis;
 
-pub use error::ChronoError;
+pub use date::ChronoError;
+pub use date::{Age, Date};
+pub use date::{Day, Month, Year};
 
-pub use day::Day;
-pub use month::Month;
-pub use year::Year;
-
-pub use age::Age;
-pub use date::Date;
+pub use rata_temporis::Accuracy;
+pub use rata_temporis::{PensionAge, PensionAgeError, PensionMonths, PensionYears};
+pub use rata_temporis::{RataTemporis, RataTemporisError};
