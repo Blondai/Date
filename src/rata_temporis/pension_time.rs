@@ -482,7 +482,7 @@ impl PensionAge {
     ///
     /// This does not involve any checks against [`PensionYears::MIN`] or [`PensionYears::MAX`].
     /// It directly constructs the [`PensionYears`] and [`PensionMonths`].
-    /// It is the callers responsibility to ensure the provided age is valid!
+    /// It is the callers responsibility to ensure the provided `age` is valid!
     #[inline]
     const fn just_age(age: u8) -> PensionAge {
         // Age must be valid
@@ -515,7 +515,7 @@ impl Display for PensionAge {
 /// An enum for handling any errors involved in the creation of [`PensionMonths`] and [`PensionYears`].
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum PensionAgeError {
-    /// The [`PensionMonths`] is greater than 11.
+    /// The [`PensionMonths`] is greater than `11`.
     MonthError { pension_months: u8 },
 
     /// The [`PensionYears`] is smaller than [`PensionYears::MIN`] or larger than [`PensionYears::MAX`].

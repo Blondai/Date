@@ -4,9 +4,9 @@ use std::fmt::{self, Display, Formatter};
 
 use crate::{ChronoError, Month, Year};
 
-/// A representation of a day in a month.
+/// A representation of a [`Day`] in a [`Month`].
 ///
-/// This is a wrapper around `u8`.
+/// This is a wrapper around [`u8`].
 #[repr(transparent)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Day {
@@ -17,20 +17,15 @@ pub struct Day {
 impl Day {
     /// Creates a new [`Day`] instance.
     ///
-    /// # Arguments
+    /// The additional arguments `month` and `year` are necessary to check whether the month has enough days.
     ///
-    /// * `day`: The day.
-    /// * `month`: The month the day should be in.
-    /// * `year`: The year the day should be in.
+    /// # Errors
     ///
-    /// # Returns
-    ///
-    /// * [`Day`] - No errors.
-    /// * [`ChronoError::DayError`] - Month does not have the amount of days provided.
+    /// * [`ChronoError::DayError`] - The `month` of the `year` does not have the amount of days provided.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Day, Month, Year};
     /// // Valid
     /// let day: Day = Day::new(31, Month::December, Year::new(2025).unwrap()).unwrap();
@@ -57,21 +52,17 @@ impl Day {
 
     /// Creates a new [`Day`] instance.
     ///
-    /// This will `panic`, when an invalid combination is provided.
+    /// The additional arguments `month` and `year` are necessary to check whether the month has enough days.
     ///
-    /// # Arguments
-    ///
-    /// * `day`: The day.
-    /// * `month`: The month the day should be in.
-    /// * `year`: The year the day should be in.
+    /// A constant version of the [`Day::new`] method.
     ///
     /// # Panics
     ///
-    /// Month does not have the amount of days provided.
+    /// The `month` of the `year` does not have the amount of days provided.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{Day, Month, Year};
     /// // Valid
     /// const DAY_1: Day = Day::new_const(31, 12, 2025);
@@ -94,6 +85,12 @@ impl Day {
     }
 
     /// Returns a new [`Day`] instance without any checks.
+    ///
+    /// # Safety
+    ///
+    /// This does not involve any validity checks.
+    /// It directly constructs the [`Day`].
+    /// It is the callers responsibility to ensure the provided `day` is valid!
     #[allow(dead_code)]
     #[inline]
     pub(crate) const fn new_unchecked(day: u8) -> Self {
@@ -104,7 +101,7 @@ impl Day {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Day, Month, Year};
     /// let day: Day = Day::new(31, Month::December, Year::new(2025).unwrap()).unwrap();
     /// assert_eq!(day.value(), 31);

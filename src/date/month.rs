@@ -4,9 +4,9 @@ use std::fmt::{self, Display, Formatter};
 
 use crate::{ChronoError, Year};
 
-/// A representation of a month.
+/// A representation of a [`Month`].
 ///
-/// This is a wrapper around `u8`.
+/// This is a wrapper around [`u8`].
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Month {
@@ -50,14 +50,13 @@ pub enum Month {
 impl Month {
     /// Creates a new [`Month`] instance.
     ///
-    /// # Returns
+    /// # Errors
     ///
-    /// * `Month` - 1 <= `month` <= 12.
-    /// * [`ChronoError::MonthError`] - Otherwise.
+    /// * [`ChronoError::MonthError`] - The `month` is not inside the interval [1, 12].
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Month};
     /// // Valid
     /// let month: Month = Month::new(11).unwrap();
@@ -88,13 +87,15 @@ impl Month {
 
     /// Creates a new [`Month`] instance.
     ///
+    /// A constant version of the [`Month::new`] method.
+    ///
     /// # Panics
     ///
-    /// Month is not between 1 (january) and 12 (december).
+    /// The `month` is not between 1 (january) and 12 (december).
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::Month;
     /// const MONTH: Month = Month::new_const(11);
     /// assert_eq!(MONTH, Month::November);
@@ -122,15 +123,14 @@ impl Month {
     ///
     /// This can be a string of a number or a string of the written month.
     ///
-    /// # Returns
+    /// # Errors
     ///
-    /// * [`Month`] - No errors.
-    /// * [`ChronoError::ParseError`] - Could not parse `string` as `u8` or could not match to word.
+    /// * [`ChronoError::ParseError`] - Could not parse `string` as [`u8`] or could not match to word.
     /// * [`ChronoError::MonthError`] - Something in [`Month::new`] went wrong.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Month};
     /// // String of number
     /// let month: Month = Month::from_string("11").unwrap();
@@ -185,7 +185,7 @@ impl Month {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Month};
     /// let month: Month = Month::November;
     /// assert_eq!(month.value(), 11);
@@ -197,11 +197,15 @@ impl Month {
 
     /// Returns the next month after the current one.
     ///
-    /// This will switch over when calling [`Month::next`] on [`Month::December`].
+    /// # Notes
+    ///
+    /// This will wrap over to [`Month::January`] when calling [`Month::next`] on [`Month::December`].
+    /// This method will not signal this jump to the caller.
+    /// See [`Month::add_months`] for this behavior.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Month};
     /// let month: Month = Month::May;
     /// let next_month: Month = month.next();
@@ -229,27 +233,18 @@ impl Month {
         }
     }
 
-    /// Adds a number of months to a [`Month`] instance.
+    /// Adds a number of months to a [`Month`] instance and returns the new [`Month`] and the number of years passed.
     ///
     /// To subtract use a negative sign.
     ///
-    /// # Arguments
+    /// # Errors
     ///
-    /// * `years` - The amount of years to add.
-    ///
-    /// # Returns
-    ///
-    /// * [`Month`] - No errors.
     /// * [`ChronoError::OverflowError`] - The `months` argument was too large.
-    ///
-    /// # Notes
-    ///
-    /// The return of a `Result` is very verbose.
-    /// A [`ChronoError::OverflowError`] will only happen, when adding approximately `i32::MAX`.
+    /// Will only happen, when adding approximately [`i32::MAX`] months.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{Date, ChronoError, Month};
     /// // Valid addtition
     /// let month: Month = Month::January;
@@ -294,13 +289,13 @@ impl Month {
         Ok((new_month, year_offset))
     }
 
-    /// Returns the number of days in a month.
+    /// Returns the number of days in a [`Month`].
     ///
     /// This will also take leap years into account.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{Month, Year};
     /// let month: Month = Month::November;
     /// assert_eq!(month.days_in_month(Year::new(2000).unwrap()), 30);
@@ -353,23 +348,40 @@ impl Display for Month {
     }
 }
 
+impl TryFrom<usize> for Month {
+    type Error = ChronoError;
+
+    fn try_from(month: usize) -> Result<Self, Self::Error> {
+        let uint: u8 = month
+            .try_into()
+            .map_err(|_| ChronoError::ParseError(month.to_string()))?;
+        Month::new(uint)
+    }
+}
+
 impl TryFrom<u8> for Month {
     type Error = ChronoError;
 
-    fn try_from(number: u8) -> Result<Self, Self::Error> {
-        Month::new(number)
+    fn try_from(month: u8) -> Result<Self, Self::Error> {
+        Month::new(month)
     }
 }
 
 impl TryFrom<i32> for Month {
     type Error = ChronoError;
 
-    fn try_from(number: i32) -> Result<Self, Self::Error> {
-        let uint: u8 = number
+    fn try_from(month: i32) -> Result<Self, Self::Error> {
+        let uint: u8 = month
             .try_into()
-            .map_err(|_| ChronoError::ParseError(number.to_string()))?;
+            .map_err(|_| ChronoError::ParseError(month.to_string()))?;
 
         Month::new(uint)
+    }
+}
+
+impl From<Month> for usize {
+    fn from(month: Month) -> usize {
+        month.value() as usize
     }
 }
 

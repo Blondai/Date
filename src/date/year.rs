@@ -4,9 +4,9 @@ use std::fmt::{self, Display, Formatter};
 
 use crate::ChronoError;
 
-/// A representation of a year.
+/// A representation of a [`Year`].
 ///
-/// This is a wrapper around `i32`.
+/// This is a wrapper around [`i32`].
 #[repr(transparent)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Year {
@@ -17,14 +17,18 @@ pub struct Year {
 impl Year {
     /// Creates a new [`Year`] instance.
     ///
-    /// # Returns
+    /// # Errors
     ///
-    /// * [`Year`] - [`Year::MIN`] <= `year` <= [`Year::MAX`].
-    /// * [`ChronoError::YearError`] - Otherwise.
+    /// * [`ChronoError::YearError`] - The `year` is not between [`Year::MIN`] and [`Year::MAX`] both included.
+    ///
+    /// # Notes
+    ///
+    /// The boundaries [`Year::MIN`] and [`Year::MAX`] are set so that any effective dates or
+    /// birthdates are within a reasonable timeframe.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Year};
     /// // Valid
     /// let year: Year = Year::new(2025).unwrap();
@@ -47,11 +51,11 @@ impl Year {
     ///
     /// # Panics
     ///
-    /// The `year` is not between [`Year::MIN`] and [`Year::MAX`].
+    /// The `year` is not between [`Year::MIN`] and [`Year::MAX`] both included.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::Year;
     /// const YEAR: Year = Year::new_const(2025);
     /// assert_eq!(YEAR.value(), 2025);
@@ -66,6 +70,12 @@ impl Year {
     }
 
     /// Returns a new [`Year`] instance without any checks.
+    ///
+    /// # Safety
+    ///
+    /// This does not involve any validity checks.
+    /// It directly constructs the [`Year`].
+    /// It is the callers responsibility to ensure the provided `year` is valid!
     #[allow(dead_code)]
     #[inline]
     pub(crate) const fn new_unchecked(year: i32) -> Self {
@@ -74,15 +84,14 @@ impl Year {
 
     /// Creates a new [`Year`] instance based on a string.
     ///
-    /// # Returns
+    /// # Errors
     ///
-    /// * [`Year`] - No errors.
     /// * [`ChronoError::YearError`] - Something in [`Year::new`] went wrong.
-    /// * [`ChronoError::ParseError`] - Could not parse `string` as `i32`.
+    /// * [`ChronoError::ParseError`] - Could not parse `string` as [`i32`].
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// use date::{Date, ChronoError, Year};
     /// // Valid
     /// let year: Year = Year::from_string("2025").unwrap();
@@ -109,7 +118,7 @@ impl Year {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::Year;
     /// let year: Year = Year::new(2025).unwrap();
     /// assert_eq!(year.value(), 2025);
@@ -125,7 +134,7 @@ impl Year {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Year};
     /// // Not a leap year
     /// let year: Year = Year::new(2025).unwrap();
@@ -150,7 +159,7 @@ impl Year {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Year};
     /// // Not a leap year
     /// let year: Year = Year::new(2025).unwrap();
@@ -177,19 +186,15 @@ impl Year {
     ///
     /// To subtract use a negative sign.
     ///
-    /// # Arguments
+    /// # Errors
     ///
-    /// * `years` - The amount of years to add.
-    ///
-    /// # Returns
-    ///
-    /// * [`Year`] - No errors.
     /// * [`ChronoError::YearError`] - Something in [`Year::new`] went wrong.
+    /// This is caused, if the resulting [`Year`] is not between [`Year::MIN`] and [`Year::MAX`].
     /// * [`ChronoError::OverflowError`] - The `years` argument was too large.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{ChronoError, Year};
     /// // Valid addition
     /// let year: Year = Year::new(2025).unwrap();
@@ -237,6 +242,14 @@ impl Year {
 impl Display for Year {
     fn fmt(&self, format: &mut Formatter<'_>) -> fmt::Result {
         write!(format, "{}", self.year)
+    }
+}
+
+impl TryFrom<usize> for Year {
+    type Error = ChronoError;
+
+    fn try_from(year: usize) -> Result<Self, Self::Error> {
+        Self::new(year as i32)
     }
 }
 

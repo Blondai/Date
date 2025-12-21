@@ -4,9 +4,9 @@ use std::fmt::{self, Display, Formatter};
 
 use crate::ChronoError;
 
-/// A representation of a persons age.
+/// A representation of a persons [`Age`].
 ///
-/// This is a wrapper around `u8`.
+/// This is a wrapper around [`u8`].
 #[repr(transparent)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Age {
@@ -16,14 +16,13 @@ pub struct Age {
 impl Age {
     /// Creates a new [`Age`] instance.
     ///
-    /// # Returns
+    /// # Errors
     ///
-    /// * `Age` - [`Age::MIN`] <= `age` <= [`Age::MAX`].
-    /// * [`ChronoError::AgeError`] - Otherwise.
+    /// * [`ChronoError::AgeError`] - `age` < [`Age::MIN`] or `age` > [`Age::MAX`].
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{Age, ChronoError};
     /// // Valid
     /// let age: Age = Age::new(29).unwrap();
@@ -43,21 +42,35 @@ impl Age {
     }
 
     /// Returns a new [`Age`] instance without any checks.
-    pub const fn new_unchecked(age: u8) -> Self {
-        Age { age }
+    ///
+    /// # Panics
+    ///
+    /// The `age` is not between [`Age::MIN`] and [`Age::MAX`] both included.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use date::Age;
+    /// const AGE: Age = Age::new_const(20);
+    /// ```
+    pub const fn new_const(age: u8) -> Self {
+        if age <= Self::MAX && age >= Self::MIN {
+            Age { age }
+        } else {
+            panic!("Invalid age")
+        }
     }
 
     /// Creates a new [`Age`] instance based on a string.
     ///
-    /// # Returns
+    /// # Errors
     ///
-    /// * [`Age`] - No errors.
     /// * [`ChronoError::AgeError`] - Something in [`Age::new`] went wrong.
-    /// * [`ChronoError::ParseError`] - Could not parse `string` as `u8`.
+    /// * [`ChronoError::ParseError`] - Could not parse `string` as [`u8`].
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{Age, ChronoError};
     /// // Valid
     /// let age: Age = Age::from_string("29").unwrap();
@@ -84,7 +97,7 @@ impl Age {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{Age, ChronoError};
     /// let age: Age = Age::new(29).unwrap();
     /// assert_eq!(age.value(), 29);
@@ -98,19 +111,14 @@ impl Age {
     ///
     /// To subtract use a negative sign.
     ///
-    /// # Arguments
+    /// # Errors
     ///
-    /// * `years` - The amount of years to add.
-    ///
-    /// # Returns
-    ///
-    /// * [`Age`] - No errors.
     /// * [`ChronoError::AgeError`] - Something in [`Age::new`] went wrong.
     /// * [`ChronoError::OverflowError`] - The `years` argument was too large.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// # use date::{Age, ChronoError};
     /// // Valid
     /// let age: Age = Age::new(30).unwrap();
