@@ -39,7 +39,7 @@ impl Year {
     /// assert_eq!(year_error, ChronoError::YearError(Year::MAX + 1));
     /// ```
     #[inline]
-    pub fn new(year: i32) -> Result<Self, ChronoError> {
+    pub const fn new(year: i32) -> Result<Self, ChronoError> {
         if year >= Self::MIN && year <= Self::MAX {
             Ok(Self { year })
         } else {
@@ -103,13 +103,11 @@ impl Year {
     ///
     /// // ParseError
     /// let parse_error: ChronoError = Year::from_string("Twenty Twenty-Five").err().unwrap();
-    /// assert_eq!(parse_error, ChronoError::ParseError(String::from("Twenty Twenty-Five")));
+    /// assert_eq!(parse_error, ChronoError::ParseError);
     /// ```
     #[inline]
     pub fn from_string(string: &str) -> Result<Self, ChronoError> {
-        let year: i32 = string
-            .parse()
-            .map_err(|_| ChronoError::ParseError(String::from(string)))?;
+        let year: i32 = string.parse().map_err(|_| ChronoError::ParseError)?;
 
         Self::new(year)
     }

@@ -67,7 +67,7 @@ impl Month {
     /// assert_eq!(month_error, ChronoError::MonthError(13));
     /// ```
     #[inline]
-    pub fn new(number: u8) -> Result<Self, ChronoError> {
+    pub const fn new(number: u8) -> Result<Self, ChronoError> {
         match number {
             1 => Ok(Month::January),
             2 => Ok(Month::February),
@@ -150,11 +150,11 @@ impl Month {
     ///
     /// // ParseError
     /// let parse_error: ChronoError = Month::from_string("First Month").err().unwrap();
-    /// assert_eq!(parse_error, ChronoError::ParseError(String::from("First Month")));
+    /// assert_eq!(parse_error, ChronoError::ParseError);
     ///
     /// // ParseError
     /// let parse_error: ChronoError = Month::from_string("1000").err().unwrap();
-    /// assert_eq!(parse_error, ChronoError::ParseError(String::from("1000")));
+    /// assert_eq!(parse_error, ChronoError::ParseError);
     /// ```
     #[inline]
     pub fn from_string(string: &str) -> Result<Self, ChronoError> {
@@ -177,7 +177,7 @@ impl Month {
             "october" | "oct" => Ok(Month::October),
             "november" | "nov" => Ok(Month::November),
             "december" | "dec" => Ok(Month::December),
-            _ => Err(ChronoError::ParseError(String::from(string)))?,
+            _ => Err(ChronoError::ParseError)?,
         }
     }
 
@@ -352,9 +352,7 @@ impl TryFrom<usize> for Month {
     type Error = ChronoError;
 
     fn try_from(month: usize) -> Result<Self, Self::Error> {
-        let uint: u8 = month
-            .try_into()
-            .map_err(|_| ChronoError::ParseError(month.to_string()))?;
+        let uint: u8 = month.try_into().map_err(|_| ChronoError::ParseError)?;
         Month::new(uint)
     }
 }
@@ -371,9 +369,7 @@ impl TryFrom<i32> for Month {
     type Error = ChronoError;
 
     fn try_from(month: i32) -> Result<Self, Self::Error> {
-        let uint: u8 = month
-            .try_into()
-            .map_err(|_| ChronoError::ParseError(month.to_string()))?;
+        let uint: u8 = month.try_into().map_err(|_| ChronoError::ParseError)?;
 
         Month::new(uint)
     }

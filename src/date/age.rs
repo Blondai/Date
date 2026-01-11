@@ -33,7 +33,7 @@ impl Age {
     /// assert_eq!(age_error, ChronoError::AgeError(200));
     /// ```
     #[inline]
-    pub fn new(age: u8) -> Result<Age, ChronoError> {
+    pub const fn new(age: u8) -> Result<Age, ChronoError> {
         if age <= Self::MAX && age >= Self::MIN {
             Ok(Age { age })
         } else {
@@ -82,13 +82,11 @@ impl Age {
     ///
     /// // ParseError
     /// let parse_error: ChronoError = Age::from_string("Twenty").err().unwrap();
-    /// assert_eq!(parse_error, ChronoError::ParseError(String::from("Twenty")));
+    /// assert_eq!(parse_error, ChronoError::ParseError);
     /// ```
     #[inline]
     pub fn from_string(string: &str) -> Result<Age, ChronoError> {
-        let age: u8 = string
-            .parse()
-            .map_err(|_| ChronoError::ParseError(String::from(string)))?;
+        let age: u8 = string.parse().map_err(|_| ChronoError::ParseError)?;
 
         Self::new(age)
     }
@@ -146,12 +144,12 @@ impl Age {
     }
 
     /// The smallest reasonable age a person should have.
-    pub const MIN: u8 = 0_u8;
+    pub const MIN: u8 = 0;
 
     /// The largest reasonable age a person should have.
     ///
     /// Oldest person ever was 122.5 years old
-    pub const MAX: u8 = 115_u8;
+    pub const MAX: u8 = 115;
 }
 
 impl Display for Age {

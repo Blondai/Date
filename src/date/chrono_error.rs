@@ -10,7 +10,7 @@ use crate::Date;
 use crate::{Age, Year};
 
 /// An enum for handling any errors involved in the creation of [`Date`]s or calculation of [`Age`]s
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ChronoError {
     /// Year was outside plausible range.
     YearError(i32),
@@ -25,7 +25,7 @@ pub enum ChronoError {
     AgeError(u8),
 
     /// Could not parse string into a given format.
-    ParseError(String),
+    ParseError,
 
     /// Over-/Underflow in addition/subtraction.
     OverflowError,
@@ -56,7 +56,7 @@ impl Display for ChronoError {
                 Age::MIN,
                 Age::MAX
             ),
-            ChronoError::ParseError(string) => write!(format, "Parse Error: {}", string),
+            ChronoError::ParseError => write!(format, "Parse Error"),
             ChronoError::OverflowError => write!(format, "Overflow Error"),
         }
     }

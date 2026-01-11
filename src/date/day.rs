@@ -40,7 +40,7 @@ impl Day {
     /// assert_eq!(day_error, ChronoError::DayError { day: 29, days_in_month: 28 });
     /// ```
     #[inline]
-    pub fn new(day: u8, month: Month, year: Year) -> Result<Self, ChronoError> {
+    pub const fn new(day: u8, month: Month, year: Year) -> Result<Self, ChronoError> {
         let days_in_month: u8 = month.days_in_month(year);
 
         if day >= 1_u8 && day <= days_in_month {

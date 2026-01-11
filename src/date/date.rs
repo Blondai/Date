@@ -118,7 +118,7 @@ impl Date {
     ///
     /// # Notes
     ///
-    /// This method could probably enhanced by automatically splitting the string at any '.' or '/'
+    /// This method could probably be enhanced by automatically splitting the string at any '.' or '/'
     /// and automatically recognizing if it is 'ddmmyyyy' or 'yyyy.mm.dd'.
     ///
     /// # Examples
@@ -131,11 +131,11 @@ impl Date {
     ///
     /// // ParseError (Too short)
     /// let year_error: ChronoError = Date::from_string("112024").err().unwrap();
-    /// assert_eq!(year_error, ChronoError::ParseError(String::from("112024")));
+    /// assert_eq!(year_error, ChronoError::ParseError);
     ///
     /// // ParseError (Wrong symbols)
     /// let month_error: ChronoError = Date::from_string(" 1 12024").err().unwrap();
-    /// assert_eq!(month_error, ChronoError::ParseError(String::from("day ' 1'")));
+    /// assert_eq!(month_error, ChronoError::ParseError);
     ///
     /// // DayError
     /// let day_error: ChronoError = Date::from_string("29022023").err().unwrap();
@@ -143,7 +143,7 @@ impl Date {
     /// ```
     pub fn from_string(string: &str) -> Result<Self, ChronoError> {
         if string.len() != 8 {
-            return Err(ChronoError::ParseError(String::from(string)));
+            return Err(ChronoError::ParseError);
         }
 
         // String slices
@@ -152,15 +152,9 @@ impl Date {
         let year_str: &str = &string[4..8];
 
         // Converted to numbers
-        let day_u8: u8 = day_str
-            .parse()
-            .map_err(|_| ChronoError::ParseError(format!("day '{}'", day_str)))?;
-        let month_u8: u8 = month_str
-            .parse()
-            .map_err(|_| ChronoError::ParseError(format!("month '{}'", month_str)))?;
-        let year_i32: i32 = year_str
-            .parse()
-            .map_err(|_| ChronoError::ParseError(format!("year '{}'", year_str)))?;
+        let day_u8: u8 = day_str.parse().map_err(|_| ChronoError::ParseError)?;
+        let month_u8: u8 = month_str.parse().map_err(|_| ChronoError::ParseError)?;
+        let year_i32: i32 = year_str.parse().map_err(|_| ChronoError::ParseError)?;
 
         // Converted to own types
         let year: Year = Year::new(year_i32)?;
